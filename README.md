@@ -1,2 +1,2 @@
-# Tinkoff_ML_contest_task
-Solution for Tinkoff ML introtask
+# Tinkoff ML contest task
+Solution for Tinkoff ML introtask -- Russian Text Generator 
