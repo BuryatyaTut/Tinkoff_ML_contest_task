@@ -4,6 +4,7 @@ import dill
 import pickle
 import re
 
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", help="enter the path where model located")
@@ -24,6 +25,7 @@ def get_args():
         prefix = args.prefix
 
     return args.model, int(length), prefix
+
 
 def load(model_dir):
     with open(model_dir, 'rb') as model_file:
