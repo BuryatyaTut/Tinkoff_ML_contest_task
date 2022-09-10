@@ -1,5 +1,7 @@
 import argparse
-import pickle
+import os
+import random
+
 import dill
 import sys
 import re
@@ -9,6 +11,7 @@ def get_text():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input-dir", help="directory of text files")
     parser.add_argument("--model", help="directory for model to be saved in")
+    parser.add_argument("--n_grams", help="amount of n in n-grams model")
     args = parser.parse_args()
 
     if not args.model:
@@ -17,7 +20,8 @@ def get_text():
 
     text = ''
     if args.input_dir:
-        text = open(args.input_dir, encoding="utf8").read()
+        for file in os.listdir(args.input_dir):
+            text += open(os.path.join(args.input_dir, file), encoding="utf8").read()
     else:
         print('You dont add path to text files, so type it in stdin.\nWhen you done just print \"eNd_type.\" in a new '
               'line')
@@ -26,7 +30,12 @@ def get_text():
             if line.rstrip() == 'eNd_type.':
                 break
             text += line
-    return text, args.model
+
+    n = 2
+    if args.n_grams:
+        n = int(args.n_grams)
+
+    return text, args.model, n
 
 
 
@@ -70,7 +79,7 @@ class Model:
 
         for i in range(length):
             ans = ans + ' ' + self.n_grams[prefix][0][0]
-            prefix = (prefix[-1], self.n_grams[prefix][0][0])
+            prefix = (*prefix[-self.n + 1:], self.n_grams[prefix][0][0])
         return ans
 
     def save(self, model_dir):
@@ -80,14 +89,14 @@ class Model:
 
 
 if __name__ == "__main__":
-    model = Model()
+    rawText, model_dir, n = get_text()
 
-    rawText, model_dir = get_text()
+    model = Model(n)
+
     tokens = model.text_to_tokens(rawText)
-
     model.fit(tokens)
 
-    text = model.generate('общее всех', 14)
+    text = model.generate(' '.join(random.choice(list(model.n_grams.keys()))), 14)
     print(text)
 
     model.save(model_dir)
