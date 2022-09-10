@@ -46,7 +46,7 @@ class Model:
 
     def text_to_tokens(self, text: str):
         text = text.lower()
-        return re.split("[^a-zа-я'ё-]+", text)
+        return re.split("[^a-zа-я'ё,-]+", text)
 
     def fit(self, data):
         n_grams = self.n_grams
@@ -68,21 +68,22 @@ class Model:
                 n_grams[grammar[0]][it[0]] = it[1] / cnt_sum
 
     def generate(self, start, length):
-        #n_grams = self.n_grams
-        ans = start
+        n_grams = self.n_grams
+
+        ans = [start]
         tokens = self.text_to_tokens(start)
         prefix = tuple(tokens[-self.n:])
 
         for i in range(length):
-            if self.n_grams.get(prefix) is None:
-                prefix = random.choice(list(self.n_grams.keys()))
-            variants = self.n_grams.get(prefix)
+            if n_grams.get(prefix) is None:
+                prefix = random.choice(list(n_grams.keys()))
+            variants = n_grams.get(prefix)
 
             add_word = random.choices(list(variants.keys()), weights=variants.values(), k=1)[0]
 
-            ans = ans + ' ' + add_word
+            ans.append(add_word)
             prefix = (*prefix[-self.n + 1:], add_word)
-        return ans
+        return ' '.join(ans)
 
     def save(self, model_dir):
         with open(model_dir, 'wb') as model_file:
