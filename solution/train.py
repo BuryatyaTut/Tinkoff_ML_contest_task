@@ -38,17 +38,15 @@ def get_text():
     return text, args.model, n
 
 
-
-
 class Model:
     n_grams = {}
 
     def __init__(self, n=2):
         self.n = n
 
-    def text_to_tokens(self, text):
+    def text_to_tokens(self, text: str):
         text = text.lower()
-        return re.split("[^a-zа-я]+", text)
+        return re.split("[^a-zа-я'ё-]+", text)
 
     def fit(self, data):
         n_grams = self.n_grams
@@ -69,23 +67,26 @@ class Model:
             for it in grammar[1].items():
                 n_grams[grammar[0]][it[0]] = it[1] / cnt_sum
 
-            n_grams[grammar[0]] = [(k, v) for k, v in
-                                   sorted(grammar[1].items(), key=lambda item: item[1], reverse=True)]
-
     def generate(self, start, length):
+        #n_grams = self.n_grams
         ans = start
         tokens = self.text_to_tokens(start)
         prefix = tuple(tokens[-self.n:])
 
         for i in range(length):
-            ans = ans + ' ' + self.n_grams[prefix][0][0]
-            prefix = (*prefix[-self.n + 1:], self.n_grams[prefix][0][0])
+            if self.n_grams.get(prefix) is None:
+                prefix = random.choice(list(self.n_grams.keys()))
+            variants = self.n_grams.get(prefix)
+
+            add_word = random.choices(list(variants.keys()), weights=variants.values(), k=1)[0]
+
+            ans = ans + ' ' + add_word
+            prefix = (*prefix[-self.n + 1:], add_word)
         return ans
 
     def save(self, model_dir):
         with open(model_dir, 'wb') as model_file:
             dill.dump(self, model_file)
-
 
 
 if __name__ == "__main__":
@@ -96,7 +97,8 @@ if __name__ == "__main__":
     tokens = model.text_to_tokens(rawText)
     model.fit(tokens)
 
-    text = model.generate(' '.join(random.choice(list(model.n_grams.keys()))), 14)
+    #text = model.generate(' '.join(random.choice(list(model.n_grams.keys()))), 1400)
+    text = model.generate("твоим бывшим", 500)
     print(text)
 
     model.save(model_dir)
