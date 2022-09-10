@@ -98,8 +98,7 @@ if __name__ == "__main__":
     tokens = model.text_to_tokens(rawText)
     model.fit(tokens)
 
-    #text = model.generate(' '.join(random.choice(list(model.n_grams.keys()))), 1400)
-    text = model.generate("твоим бывшим", 500)
-    print(text)
+    # text = model.generate(' '.join(random.choice(list(model.n_grams.keys()))), 14)
+    # print(text)
 
     model.save(model_dir)
