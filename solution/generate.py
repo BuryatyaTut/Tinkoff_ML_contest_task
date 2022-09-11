@@ -1,6 +1,7 @@
 import argparse
 import random
 import dill
+import re
 
 
 def get_args():
