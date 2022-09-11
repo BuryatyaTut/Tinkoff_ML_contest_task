@@ -10,7 +10,7 @@ import re
 def get_text():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input-dir", help="directory of text files")
-    parser.add_argument("--model", help="directory for model to be saved in")
+    parser.add_argument("--model", help="directory name for model to be saved in")
     parser.add_argument("--n_grams", help="amount of n in n-grams model")
     args = parser.parse_args()
 
@@ -46,7 +46,7 @@ class Model:
 
     def text_to_tokens(self, text: str):
         text = text.lower()
-        return re.split("[^a-zа-я'ё,-]+", text)
+        return re.split("[^a-zа-я.'ё,-]+", text)
 
     def fit(self, data):
         n_grams = self.n_grams
