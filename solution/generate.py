@@ -1,8 +1,6 @@
 import argparse
 import random
 import dill
-import pickle
-import re
 
 
 def get_args():
